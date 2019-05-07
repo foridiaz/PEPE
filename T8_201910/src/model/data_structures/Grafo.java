@@ -84,7 +84,7 @@ public class Grafo <K extends Comparable<K>,V,A> extends DefaultHandler
 		}
 		else
 		{
-			//			reHashGrafo();
+//			reHashGrafo();
 			addVertex( pIdVertex, infoVertex);
 		}
 	}
@@ -92,19 +92,19 @@ public class Grafo <K extends Comparable<K>,V,A> extends DefaultHandler
 	/**
 	 * Actualiza la posicion de todos los elementos del hashTable segun su llave y el nuevo tamano
 	 */
-	//	public void	reHashGrafo()
-	//	{
-	//		Vertice[] copiaHash= arreglo; //se crea un copia con los vertices actuales
-	//		arreglo = new Vertice[arreglo.length*2];//se aumenta la tabla del HashTableLinear
-	//
-	//		for ( int i = 0; i < copiaHash.length; i++)//se obtienen los nuevos indices 
-	//		{
-	//			if(copiaHash[i]!=null)
-	//			{
-	//				addVertex((K)copiaHash[i].darLlave(),(V)copiaHash[i].darArcos());
-	//			}
-	//		} 
-	//	}
+//		public void	reHashGrafo()
+//		{
+//			Vertice[] copiaHash= arreglo; //se crea un copia con los vertices actuales
+//			arreglo = new Vertice[arreglo.length*2];//se aumenta la tabla del HashTableLinear
+//	
+//			for ( int i = 0; i < copiaHash.length; i++)//se obtienen los nuevos indices 
+//			{
+//				if(copiaHash[i]!=null)
+//				{
+//					addVertex((K)copiaHash[i].darLlave(),(V)copiaHash[i].darArcos());
+//				}
+//			} 
+//		}
 	/**
 	 * Adiciona el arco No dirigido entre el vertice IdVertexIni y el vertice IdVertexFin. El arco tiene la informacion infoArc.
 	 */
@@ -218,7 +218,6 @@ public class Grafo <K extends Comparable<K>,V,A> extends DefaultHandler
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 
-		System.out.println(localName);
 	}
 
 	public ArrayList<Vertice<verticeInfo,Long,Double>> getVertices(){
@@ -245,38 +244,28 @@ public class Grafo <K extends Comparable<K>,V,A> extends DefaultHandler
 		case "node":
 			verticeInfo info= new verticeInfo(Double.parseDouble(attributes.getValue("lat")),Double.parseDouble(attributes.getValue("lon")));
 			vertice=new Vertice<>(Long.parseLong(attributes.getValue("id")), info); 
-			System.out.println(vertice.darLlave()+"");
 			vertices.add(vertice);
 			break; 
 
 		case "way":
-			System.out.println("entro");
 			anterior=null;  
 			actual=null;  
 			break; 
 		case "nd": 
 			actual=Long.parseLong(attributes.getValue("ref")); 
-			System.out.println("actual"+actual);
-			System.out.println("anterior"+anterior);
 			if(anterior!=null) { 
-				System.out.println("entro");
 				Vertice<verticeInfo, Long, Double> uno=getVertice(actual);
-				System.out.println("a");
 				Vertice<verticeInfo, Long, Double> dos=getVertice(anterior);
-				System.out.println(uno+"");
 				double lat1=uno.darValor().darLatitud(); 
-				System.out.println("c");
 				double lat2=dos.darValor().darLatitud();
 				double deltalat=lat2-lat1; 
 				double long1=uno.darValor().darlongitud(); 
 				double long2=dos.darValor().darlongitud(); 
 				double deltalong=long2-long1; 
-				System.out.println("d");
 				double a = Math.pow(Math.sin(deltalat/2),2)+Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin(deltalong/2),2); 
 				double b=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 				double dis=radio*b; 
 				uno.agregarArco(dis, uno.darLlave(), dos.darLlave());
-				System.out.println("Agrego");
 				dos.agregarArco(dis, dos.darLlave(), uno.darLlave());			
 				nArcos++; 
 			}
@@ -301,11 +290,11 @@ public class Grafo <K extends Comparable<K>,V,A> extends DefaultHandler
 		PrintWriter pw= new PrintWriter(new File("."+File.separator+"data"+File.separator+"JsonVertices"));
 		boolean cerrado=true;
 		String fin="},";
-		pw.println("{");
+		pw.println("[");
 		for(int i=0; i<vertices.size(); i++) {
 			Vertice<verticeInfo, Long, Double> actual= vertices.get(i); 
 			pw.println("{");
-			pw.println("\""+vertices.get(i).darLlave()+"\": {");
+			pw.println("\"id\":"+vertices.get(i).darLlave()+",");
 			pw.println("\"lat\":"+vertices.get(i).darValor().darLatitud()+",");
 			pw.println("\"lon\":"+vertices.get(i).darValor().darlongitud()+",");
 			String arcos=""; 
@@ -323,9 +312,8 @@ public class Grafo <K extends Comparable<K>,V,A> extends DefaultHandler
 			pw.println(fin); 
 
 		}
-		pw.println("}");
+		pw.println("]");
 		pw.close();
-
 	}
 }
 
